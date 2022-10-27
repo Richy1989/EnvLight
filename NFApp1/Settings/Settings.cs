@@ -1,9 +1,4 @@
 ﻿using nanoFramework.Hardware.Esp32;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Resources;
-using System.Text;
 
 namespace NFApp1.Settings
 {

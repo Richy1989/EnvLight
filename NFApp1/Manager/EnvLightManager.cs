@@ -1,14 +1,14 @@
-﻿using LuminInside.MQTT;
+﻿using System;
+using System.Device.Gpio;
+using System.Diagnostics;
+using System.Net.NetworkInformation;
+using System.Threading;
+using LuminInside.MQTT;
 using LuminInside.Sensor;
 using LuminInside.WiFi;
 using nanoFramework.Hardware.Esp32;
 using NFApp1.Light;
 using NFApp1.Settings;
-using System;
-using System.Device.Gpio;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
-using System.Threading;
 
 namespace NFApp1.Manager
 {
@@ -26,8 +26,8 @@ namespace NFApp1.Manager
         public EnvLightManager()
         {
             this.AsseblyName = "EnvLight";
-            this.SettingsManager = new SettingsManager();
-            this.SettingsManager.LoadSettings(true);
+            this.SettingsManager = new();
+            this.SettingsManager.LoadSettings();
             this.GlobalSettings = this.SettingsManager.GlobalSettings;
 
             //Load the default values only valid for the build environment. Do not make these values Public
@@ -53,25 +53,34 @@ namespace NFApp1.Manager
             //Thread touchThread = new(new ThreadStart(gpioService.Execute));
             //touchThread.Start();
 
-            WiFiManager wifi = new(token);
-            wifi.Connect(GlobalSettings.WifiSettings.Ssid, GlobalSettings.WifiSettings.Password);
+            if (GlobalSettings.WifiSettings.ConnectToWifi)
+            {
+                WiFiManager wifi = new(token);
+                wifi.Connect(GlobalSettings.WifiSettings.Ssid, GlobalSettings.WifiSettings.Password);
+                Thread wifiThread = new(new ThreadStart(wifi.KeepConnected));
+                wifiThread.Start();
+            }
 
-            Thread wifiThread = new(new ThreadStart(wifi.KeepConnected));
-            wifiThread.Start();
+            MqttManager mqttManager = null;
+            if (GlobalSettings.MqttSettings.ConnectToMqtt)
+            {
+                mqttManager = new(token);
+                mqttManager.Connect(
+                    GlobalSettings.MqttSettings.MqttHostName,
+                    string.Format("{0}/{1}", AsseblyName, GlobalSettings.MqttSettings.MqttClientID),
+                    GlobalSettings.MqttSettings.MqttUserName,
+                    GlobalSettings.MqttSettings.MqttPassword);
 
-            MqttManager mqttManager = new(token);
-            mqttManager.Connect(
-                GlobalSettings.MqttSettings.MqttHostName,
-                string.Format("{0}/{1}", AsseblyName, GlobalSettings.MqttSettings.MqttClientID),
-                GlobalSettings.MqttSettings.MqttUserName, 
-                GlobalSettings.MqttSettings.MqttPassword);
-            
-            Thread mqttThread = new(new ThreadStart(mqttManager.StartSending));
-            mqttThread.Start();
+                Thread mqttThread = new(new ThreadStart(mqttManager.StartSending));
+                mqttThread.Start();
+            }
 
-            var DHTSendsor = new DHT22Sensor(Gpio.IO12, Gpio.IO14, controller, mqttManager, token);
-            Thread sensorThread = new(new ThreadStart(DHTSendsor.StartRead));
-            sensorThread.Start();
+            if (GlobalSettings.UseDHT22)
+            {
+                var DHTSendsor = new DHT22Sensor(Gpio.IO12, Gpio.IO14, controller, mqttManager, token);
+                Thread sensorThread = new(new ThreadStart(DHTSendsor.StartRead));
+                sensorThread.Start();
+            }
 
             GpioPin pin = controller.OpenPin(Gpio.IO02, PinMode.Output);
             pin.Write(PinValue.High);
