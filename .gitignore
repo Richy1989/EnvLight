@@ -396,3 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+#Non Pushable Private Filers
+**/NotPushable/
+NotPushable.cs
