@@ -1,11 +1,6 @@
-using LuminInside.MQTT;
-using LuminInside.Sensor;
-using LuminInside.WiFi;
-using nanoFramework.Hardware.Esp32;
-using NFApp1.Manager;
-using System.Device.Gpio;
 using System.Diagnostics;
 using System.Threading;
+using NFApp1.Manager;
 
 namespace NFApp1
 {

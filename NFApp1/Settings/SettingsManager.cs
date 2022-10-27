@@ -9,9 +9,10 @@ namespace NFApp1.Settings
 {
     public class SettingsManager
     {
-        public string uniqueID;
-        private const string FilePath = "I:\\Seetings.Json";
-        private ManualResetEvent mreSettings = new ManualResetEvent(true);
+        private const string FilePath = "I:\\settings.json";
+
+        //Make sure only one thread at the time can modify the settings file
+        private ManualResetEvent mreSettings = new(true);
 
         public Settings GlobalSettings { get; private set; }
         public void LoadSettings(bool resetSettings = false)
@@ -20,16 +21,14 @@ namespace NFApp1.Settings
 
             //Delete Settings File
             if (resetSettings)
-            {
                 DeleteSettingsFile();
-            }
 
             //If not exist -> Create new Setting File
             if (!File.Exists(FilePath))
             {
                 Debug.WriteLine("+++++ Create new Settings File +++++");
                 Settings newSettings = new();
-                uniqueID = EnvLightManager.GetUniqueID();
+                var uniqueID = EnvLightManager.GetUniqueID();
                 newSettings.MqttSettings.MqttClientID = string.Format("EnvLight_{0}", uniqueID);
 
                 CreateSettingFile(newSettings);
@@ -37,11 +36,12 @@ namespace NFApp1.Settings
 
             //Read settings from settings file
             Debug.WriteLine("+++++ Read settings from file +++++");
-            FileStream fs2 = new FileStream(FilePath, FileMode.Open, FileAccess.ReadWrite);
+            FileStream fs2 = new(FilePath, FileMode.Open, FileAccess.ReadWrite);
             byte[] fileContent = new byte[fs2.Length];
             fs2.Read(fileContent, 0, (int)fs2.Length);
 
             var settingsText = Encoding.UTF8.GetString(fileContent, 0, (int)fs2.Length);
+            fs2.Dispose();
 
             Debug.WriteLine("+++++ Settings Text: +++++");
             Debug.WriteLine(settingsText);
@@ -51,11 +51,10 @@ namespace NFApp1.Settings
             mreSettings.Set();
         }
 
+        //Delete the settings file and create a new one according to the actual Settings File
         public void UpdateSettings()
         {
             mreSettings.WaitOne();
-
-            DeleteSettingsFile();
 
             if (GlobalSettings != null)
                 CreateSettingFile(GlobalSettings);
@@ -63,6 +62,7 @@ namespace NFApp1.Settings
             mreSettings.Set();
         }
 
+        //Create the settings json file
         private void CreateSettingFile(Settings settingsFile)
         {
             File.Create(FilePath);
@@ -73,6 +73,7 @@ namespace NFApp1.Settings
             fileStream.Dispose();
         }
 
+        //Delete the settings file 
         private void DeleteSettingsFile()
         {
             Debug.WriteLine("+++++ Deleting Settings File +++++");
