@@ -28,8 +28,7 @@ namespace NFApp1.Settings
                 Debug.WriteLine("+++++ Create new Settings File +++++");
                 Settings newSettings = new();
                 uniqueID = EnvLightManager.GetUniqueID();
-                newSettings.MqttSettings.MqttClientID = string.Format("EnvLight{0}", uniqueID);
-
+                newSettings.MqttSettings.MqttClientID = string.Format("EnvLight_{0}", uniqueID);
 
                 File.Create(filePath);
                 FileStream fileStream = new(filePath, FileMode.Open, FileAccess.ReadWrite);
@@ -39,6 +38,7 @@ namespace NFApp1.Settings
                 fileStream.Dispose();
             }
 
+            //Read settings from settings file
             Debug.WriteLine("+++++ Read settings from file +++++");
             FileStream fs2 = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite);
             byte[] fileContent = new byte[fs2.Length];
