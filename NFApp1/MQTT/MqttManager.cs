@@ -75,7 +75,7 @@ namespace LuminInside.MQTT
 
         public void SendMessage(string topic, byte[] message)
         {
-            string to = clientId + "/" + topic;
+            string to = $"{clientId}/{topic}";
             mqtt.Publish(to, message);
         }
 

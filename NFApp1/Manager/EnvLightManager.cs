@@ -10,6 +10,7 @@ using nanoFramework.Hardware.Esp32;
 using NFApp1.Light;
 using NFApp1.Sensor;
 using NFApp1.Settings;
+using NFApp1.WebContent;
 
 namespace NFApp1.Manager
 {
@@ -53,6 +54,10 @@ namespace NFApp1.Manager
             gpioService.Execute();
             //Thread touchThread = new(new ThreadStart(gpioService.Execute));
             //touchThread.Start();
+
+            WebManager webManager = new WebManager();
+            Thread webThread = new(new ThreadStart(webManager.StartServer));
+            webThread.Start();
 
             if (GlobalSettings.WifiSettings.ConnectToWifi)
             {
