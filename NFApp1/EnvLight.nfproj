@@ -18,7 +18,9 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="MQTT\SensorAirQualityMessage.cs" />
     <Compile Include="NotPushable\NotPushable.cs" />
+    <Compile Include="Sensor\ITemperatureHumidity.cs" />
     <Compile Include="Settings\MqttSettings.cs" />
     <Compile Include="Settings\Settings.cs" />
     <Compile Include="Common\ILedController.cs" />
@@ -53,6 +55,9 @@
     <Compile Include="WiFi\WiFiManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Iot.Device.Ccs811">
+      <HintPath>..\packages\nanoFramework.Iot.Device.Ccs811.1.2.141\lib\Iot.Device.Ccs811.dll</HintPath>
+    </Reference>
     <Reference Include="Iot.Device.Dhtxx.Esp32">
       <HintPath>..\packages\nanoFramework.Iot.Device.Dhtxx.Esp32.1.2.141\lib\Iot.Device.Dhtxx.Esp32.dll</HintPath>
     </Reference>
@@ -85,6 +90,9 @@
     </Reference>
     <Reference Include="nanoFramework.WebServer">
       <HintPath>..\packages\nanoFramework.WebServer.1.1.47\lib\nanoFramework.WebServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Buffers.Binary.BinaryPrimitives">
+      <HintPath>..\packages\nanoFramework.System.Buffers.Binary.BinaryPrimitives.1.2.82\lib\System.Buffers.Binary.BinaryPrimitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Device.Gpio">
       <HintPath>..\packages\nanoFramework.System.Device.Gpio.1.1.22\lib\System.Device.Gpio.dll</HintPath>
@@ -122,11 +130,20 @@
     <Reference Include="System.Threading">
       <HintPath>..\packages\nanoFramework.System.Threading.1.1.8\lib\System.Threading.dll</HintPath>
     </Reference>
+    <Reference Include="UnitsNet.ElectricCurrent">
+      <HintPath>..\packages\UnitsNet.nanoFramework.ElectricCurrent.4.145.0\lib\UnitsNet.ElectricCurrent.dll</HintPath>
+    </Reference>
+    <Reference Include="UnitsNet.Length">
+      <HintPath>..\packages\UnitsNet.nanoFramework.Length.4.145.0\lib\UnitsNet.Length.dll</HintPath>
+    </Reference>
     <Reference Include="UnitsNet.RelativeHumidity">
       <HintPath>..\packages\UnitsNet.nanoFramework.RelativeHumidity.4.145.0\lib\UnitsNet.RelativeHumidity.dll</HintPath>
     </Reference>
     <Reference Include="UnitsNet.Temperature">
       <HintPath>..\packages\UnitsNet.nanoFramework.Temperature.4.145.0\lib\UnitsNet.Temperature.dll</HintPath>
+    </Reference>
+    <Reference Include="UnitsNet.VolumeConcentration">
+      <HintPath>..\packages\UnitsNet.nanoFramework.VolumeConcentration.4.145.0\lib\UnitsNet.VolumeConcentration.dll</HintPath>
     </Reference>
     <Reference Include="Windows.Storage">
       <HintPath>..\packages\nanoFramework.Windows.Storage.1.5.24\lib\Windows.Storage.dll</HintPath>

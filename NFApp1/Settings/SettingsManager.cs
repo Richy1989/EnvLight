@@ -9,6 +9,7 @@ namespace NFApp1.Settings
 {
     public class SettingsManager
     {
+        //Setings file Path (I = Internal Flash Memory)
         private const string FilePath = "I:\\settings.json";
 
         //Make sure only one thread at the time can modify the settings file

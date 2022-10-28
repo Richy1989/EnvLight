@@ -29,6 +29,7 @@ namespace LuminInside.MQTT
             this.token = token;
             Messages = new Hashtable();
             Messages.Add(typeof(SensorEnvironmentMessage), new SensorEnvironmentMessage());
+            Messages.Add(typeof(SensorAirQualityMessage), new SensorAirQualityMessage());
         }
 
         public void Connect(string ip, string clientID, string user, string password)

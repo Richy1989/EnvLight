@@ -8,6 +8,7 @@ using LuminInside.Sensor;
 using LuminInside.WiFi;
 using nanoFramework.Hardware.Esp32;
 using NFApp1.Light;
+using NFApp1.Sensor;
 using NFApp1.Settings;
 
 namespace NFApp1.Manager
@@ -27,7 +28,7 @@ namespace NFApp1.Manager
         {
             this.AsseblyName = "EnvLight";
             this.SettingsManager = new();
-            this.SettingsManager.LoadSettings();
+            this.SettingsManager.LoadSettings(true);
             this.GlobalSettings = this.SettingsManager.GlobalSettings;
 
             //Load the default values only valid for the build environment. Do not make these values Public
@@ -75,13 +76,23 @@ namespace NFApp1.Manager
                 mqttThread.Start();
             }
 
+            DHT22Sensor DHTSendsor = null;
+
             if (GlobalSettings.UseDHT22)
             {
-                var DHTSendsor = new DHT22Sensor(Gpio.IO12, Gpio.IO14, controller, mqttManager, token);
+                DHTSendsor = new DHT22Sensor(GlobalSettings.DHT22Gpio1, GlobalSettings.DHT22Gpio2, controller, mqttManager, token);
                 Thread sensorThread = new(new ThreadStart(DHTSendsor.StartRead));
                 sensorThread.Start();
             }
 
+            if (GlobalSettings.UseCCS811)
+            {
+                var ccs811Sensor = new CCS811GasSensor(GlobalSettings.I2CSDA, GlobalSettings.I2CSCL, mqttManager, DHTSendsor, token);
+                Thread ccs811SensorThread = new(new ThreadStart(ccs811Sensor.StartMeasuring));
+                ccs811SensorThread.Start();
+            }
+
+            //Set LED on GPIO Pin 2 ON to show successful startup
             GpioPin pin = controller.OpenPin(Gpio.IO02, PinMode.Output);
             pin.Write(PinValue.High);
         }
@@ -94,13 +105,13 @@ namespace NFApp1.Manager
             {
                 var physicalAddress = ni[0].PhysicalAddress;
                 var physicalAddressString = string.Format("{0:X}:{1:X}:{2:X}:{3:X}:{4:X}:{5:X}", physicalAddress[0], physicalAddress[1], physicalAddress[2], physicalAddress[3], physicalAddress[4], physicalAddress[5]);
-                Debug.WriteLine(string.Format("+++ Returning MAC: {0} +++", physicalAddressString));
+                Debug.WriteLine($"+++++ Returning MAC: {physicalAddressString} +++++");
                 return physicalAddressString;
             }
             else
             {
                 var uniqueID = Guid.NewGuid().ToString();
-                Debug.WriteLine(string.Format("+++ Returning GUID: {0} +++", uniqueID));
+                Debug.WriteLine($"+++++ Returning GUID: {uniqueID} +++++");
                 return uniqueID;
             }
         }

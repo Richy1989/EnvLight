@@ -1,29 +1,26 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Iot.Device.DHTxx.Esp32;
-using NFApp1.Interfaces;
 using System;
 using System.Device.Gpio;
 using System.Diagnostics;
 using System.Threading;
-using nanoFramework.Json;
+using Iot.Device.DHTxx.Esp32;
+using NFApp1.Interfaces;
 using NFApp1.MQTT;
+using NFApp1.Sensor;
 
 namespace LuminInside.Sensor
 {
-    public class DHT22Sensor
+    public class DHT22Sensor : ITemperatureHumidity
     {
         public int ReadInterval { get; set; } = 1000;
-
-        private DhtBase dht22;
-
         public double Temperature { get; set; }
         public double Humidity { get; set; }
 
-        private IPublishMqtt publisher;
-
+        private readonly IPublishMqtt publisher;
         private CancellationToken token;
+        private readonly DhtBase dht22;
 
         public DHT22Sensor(int pinEcho, int pinTrigger, GpioController controller, CancellationToken token)
         {
@@ -56,8 +53,6 @@ namespace LuminInside.Sensor
                     {
                         ((SensorEnvironmentMessage)publisher.Messages[typeof(SensorEnvironmentMessage)]).Humidity = Humidity;
                         ((SensorEnvironmentMessage)publisher.Messages[typeof(SensorEnvironmentMessage)]).Temperature = Temperature;
-                        ////publisher.Publish("Environment/Temperature", Temperature.ToString());
-                        ////publisher.Publish("Environment/Humidity", Humidity.ToString());
                     }
                 }
                 else
