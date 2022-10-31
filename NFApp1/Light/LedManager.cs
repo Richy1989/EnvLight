@@ -2,7 +2,10 @@
 using LuminInside.Enumerations;
 using LuminInside.Helper;
 using NFApp1.Enumerations;
+using NFApp1.Helper;
 using System;
+using System.Diagnostics;
+using System.Drawing;
 
 namespace NFApp1.Light
 {
@@ -50,12 +53,14 @@ namespace NFApp1.Light
         public void SetRandomColor()
         {
             Random rnd = new();
-            Color startColor = Color.FromArgb((byte)rnd.Next(256), (byte)rnd.Next(256), (byte)rnd.Next(256));
+            var hueStart = rnd.Next(360);
+            HSLColor startHSL = new(((double)hueStart), ((double)360), ((double)(360/2)));
 
-            rnd = new Random();
-            Color endColor = Color.FromArgb((byte)rnd.Next(256), (byte)rnd.Next(256), (byte)rnd.Next(256));
+            rnd = new Random(300);
+            var hueEnd = rnd.Next(360);
+            HSLColor endHSL = new(((double)hueEnd), ((double)360), ((double)(360/2)));
 
-            SetColor(startColor, endColor, ColorInterpolationMode.HueMode);
+            SetColor(startHSL, endHSL, ColorInterpolationMode.HueMode);
         }
 
         /// <summary>Sets the color.</summary>
@@ -70,25 +75,11 @@ namespace NFApp1.Light
             StartColor = startColor;
             EndColor = endColor;
 
-            //////If mode is running, let only the color object change, but do not transfer colors to screen.
-            ////if (IsModeRunning)
-            ////{
-            ////    var enumType = typeof(LedMode);
-            ////    var memberInfos = enumType.GetMember(runningLedMode.ToString());
-            ////    var enumValueMemberInfo = memberInfos.FirstOrDefault(m => m.DeclaringType == enumType);
-            ////    var valueAttributes = enumValueMemberInfo.GetCustomAttributes(typeof(LedModeAttribute), false);
-
-            ////    if (!((LedModeAttribute)valueAttributes[0]).CanSetColor)
-            ////        return;
-
-            ////    useSmoothing = ((LedModeAttribute)valueAttributes[0]).UseSmoothing;
-            ////}
-
             var colors = ColorHelpers.ColorGradient(StartColor, EndColor, LedController.LedCount, interpolationMode);
 
             for (int i = 0; i < LedController.LedCount; i++)
             {
-                leds.SetPixel(ref i, (Color)colors[i]);
+                leds.SetPixel(ref i, (Color)(colors[i]));
             }
 
             LedController.SendPixels(leds.pixels);

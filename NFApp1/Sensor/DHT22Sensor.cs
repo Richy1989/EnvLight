@@ -71,7 +71,8 @@ namespace LuminInside.Sensor
             while (!token.IsCancellationRequested)
             {
                 ReadOnce();
-                Thread.Sleep(ReadInterval);
+                //Thread.Sleep(ReadInterval);
+                Thread.Sleep(TimeSpan.FromSeconds(10));
             }
         }
     }

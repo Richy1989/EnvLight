@@ -206,19 +206,20 @@ namespace LuminInside.Helper
         public static Color FromArgb(byte alpha, byte red, byte green, byte blue)
         {
             uint color = alpha;
-            color = (color << 8) & red;
-            color = (color << 8) & green;
-            color = (color << 8) & blue;
+            color = (color << 8) | red;
+            color = (color << 8) | green;
+            color = (color << 8) | blue;
             return new Color(color);
         }
 
         public static Color FromArgb(byte red, byte green, byte blue)
         {
-            uint color = 0xff;
-            color = (color << 8) & red;
-            color = (color << 8) & green;
-            color = (color << 8) & blue;
-            return new Color(color);
+            ulong color = 0xff;
+            
+            color = (color << 8) | red;
+            color = (color << 8) | green;
+            color = (color << 8) | blue;
+            return new Color((uint)color);
         }
 
         public void GetHUE()

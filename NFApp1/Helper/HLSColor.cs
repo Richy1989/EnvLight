@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Drawing;
 
-namespace LuminInside.Helper
+namespace NFApp1.Helper
 {
     public class HSLColor
     {
@@ -10,7 +11,7 @@ namespace LuminInside.Helper
         private double saturation = 1.0;
         private double luminosity = 1.0;
 
-        public const double scale = 240.0;
+        public const double scale = 360.0;
 
         public static double Scale
         {
@@ -44,13 +45,13 @@ namespace LuminInside.Helper
 
         public override string ToString()
         {
-            return String.Format("H: {0:#0.##} S: {1:#0.##} L: {2:#0.##}", Hue, Saturation, Luminosity);
+            return string.Format("H: {0:0.##} S: {1:0.##} L: {2:0.##}", Hue, Saturation, Luminosity);
         }
 
         public string ToRGBString()
         {
             Color color = (Color)this;
-            return String.Format("R: {0:#0.##} G: {1:#0.##} B: {2:#0.##}", color.R, color.G, color.B);
+            return string.Format("R: {0:0.##} G: {1:0.##} B: {2:0.##}", color.R, color.G, color.B);
         }
 
         #region Casts to/from System.Drawing.Color
@@ -71,7 +72,7 @@ namespace LuminInside.Helper
                     b = GetColorComponent(temp1, temp2, hslColor.hue - 1.0 / 3.0);
                 }
             }
-            return Color.FromArgb((byte)(255 * r), (byte)(255 * g), (byte)(255 * b));
+            return Color.FromArgb((int)(255 * r), (int)(255 * g), (int)(255 * b));
         }
 
         private static double GetColorComponent(double temp1, double temp2, double temp3)
@@ -82,7 +83,7 @@ namespace LuminInside.Helper
             else if (temp3 < 0.5)
                 return temp2;
             else if (temp3 < 2.0 / 3.0)
-                return temp1 + ((temp2 - temp1) * ((2.0 / 3.0) - temp3) * 6.0);
+                return temp1 + (temp2 - temp1) * (2.0 / 3.0 - temp3) * 6.0;
             else
                 return temp1;
         }
@@ -100,38 +101,50 @@ namespace LuminInside.Helper
             if (hslColor.luminosity < 0.5)  //<=??
                 temp2 = hslColor.luminosity * (1.0 + hslColor.saturation);
             else
-                temp2 = hslColor.luminosity + hslColor.saturation - (hslColor.luminosity * hslColor.saturation);
+                temp2 = hslColor.luminosity + hslColor.saturation - hslColor.luminosity * hslColor.saturation;
             return temp2;
         }
 
         public static implicit operator HSLColor(Color color)
         {
-            return FromRGB(color.R, color.G, color.B);
+            var hslColor = FromRGB(color.R, color.G, color.B);
+            ////HSLColor hslColor = new HSLColor
+            ////{
+            ////    hue = color.GetHue() / 360.0, // we store hue as 0-1 as opposed to 0-360 
+            ////    luminosity = color.GetBrightness(),
+            ////    saturation = color.GetSaturation()
+            ////};
+            return hslColor;
         }
         #endregion
 
-        public void SetRGB(byte red, byte green, byte blue)
+        public void SetRGB(int red, int green, int blue)
         {
             HSLColor hslColor = (HSLColor)Color.FromArgb(red, green, blue);
-            this.hue = hslColor.hue;
-            this.saturation = hslColor.saturation;
-            this.luminosity = hslColor.luminosity;
+            hue = hslColor.hue;
+            saturation = hslColor.saturation;
+            luminosity = hslColor.luminosity;
         }
 
         public HSLColor() { }
         public HSLColor(Color color)
         {
-            SetRGB(color.R, color.G, color.B);
+            var hslColor = HSLColor.FromRGB(color.R, color.G, color.B);
+            this.hue = hslColor.hue;
+            this.saturation = hslColor.saturation;
+            this.luminosity = hslColor.luminosity;
         }
-        public HSLColor(byte red, byte green, byte blue)
+
+        private HSLColor(int red, int green, int blue)
         {
             SetRGB(red, green, blue);
         }
+
         public HSLColor(double hue, double saturation, double luminosity)
         {
-            this.Hue = hue;
-            this.Saturation = saturation;
-            this.Luminosity = luminosity;
+            Hue = hue;
+            Saturation = saturation;
+            Luminosity = luminosity;
         }
 
         public static HSLColor FromRGB(Byte R, Byte G, Byte B)
@@ -174,11 +187,12 @@ namespace LuminInside.Helper
                 }
             }
 
-            //////Convert to degrees
-            ////H = H * 60f;
-            ////if (H < 0) H += 360;
+            //Convert to degrees
+            H = H * 60f;
+            if (H < 0) H += 360;
+            H = H / 360f;
 
-            return new HSLColor(H, S, L);
+            return new HSLColor(H * scale, S * scale, L * scale);
         }
 
     }

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Device.Gpio;
 using System.Diagnostics;
+using System.Drawing;
 using System.Net.NetworkInformation;
 using System.Threading;
+using HeliosClockAPIStandard.Controller;
 using LuminInside.MQTT;
 using LuminInside.Sensor;
 using LuminInside.WiFi;
 using nanoFramework.Hardware.Esp32;
+using NFApp1.Enumerations;
 using NFApp1.Light;
 using NFApp1.Sensor;
 using NFApp1.Settings;
@@ -48,12 +51,22 @@ namespace NFApp1.Manager
             CancellationToken token = source.Token;
 
             controller = new GpioController();
-            ////LedManager = new(new LedAPA102Controller(50));
-
             this.gpioService = new GpioService.GpioService(controller, this, SettingsManager.GlobalSettings, token);
             gpioService.Execute();
-            //Thread touchThread = new(new ThreadStart(gpioService.Execute));
-            //touchThread.Start();
+            ////Thread touchThread = new(new ThreadStart(gpioService.Execute));
+            ////touchThread.Start();
+
+            LedManager = new(new LedAPA102Controller(50, GlobalSettings.SPIMOSI, GlobalSettings.SPICLK));
+            Thread lightTread = new(new ThreadStart(() =>
+            {
+                while (true)
+                {
+                    LedManager.SetRandomColor();
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                }
+            }));
+
+            lightTread.Start();
 
             WebManager webManager = new WebManager();
             Thread webThread = new(new ThreadStart(webManager.StartServer));
@@ -102,7 +115,7 @@ namespace NFApp1.Manager
             pin.Write(PinValue.High);
         }
 
-        //Creae aUnique ID based on the MAC address of the controller
+        //Create a Unique ID based on the MAC address of the controller
         public static string GetUniqueID()
         {
             var ni = NetworkInterface.GetAllNetworkInterfaces();

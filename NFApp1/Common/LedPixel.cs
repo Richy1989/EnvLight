@@ -1,4 +1,5 @@
-﻿using LuminInside.Helper;
+﻿using System.Drawing;
+using LuminInside.Helper;
 
 namespace LuminInside.Common
 {

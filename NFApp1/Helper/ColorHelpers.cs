@@ -1,7 +1,8 @@
-﻿using LuminInside.Enumerations;
-using System;
+﻿using System;
 using System.Collections;
-using System.Threading;
+using System.Drawing;
+using LuminInside.Enumerations;
+using NFApp1.Helper;
 
 namespace LuminInside.Helper
 {
@@ -34,7 +35,6 @@ namespace LuminInside.Helper
         {
             if (startColor.R == endColor.R && startColor.G == endColor.G && startColor.B == endColor.B)
             {
-
                 IList colors = new ArrayList();
 
                 for (int i = 0; i < size; i++)
@@ -43,7 +43,6 @@ namespace LuminInside.Helper
                 }
 
                 return colors;
-               
             }
 
             switch (interpolationMode)
@@ -51,7 +50,7 @@ namespace LuminInside.Helper
                 case ColorInterpolationMode.HueMode:
                     return CalculateGradientHUE(endColor, startColor, size);
                 case ColorInterpolationMode.HueNearestMode:
-                    throw new NotImplementedException();// return CalculateGradientHUENearest(endColor, startColor, size);
+                    return CalculateGradientHUENearest(endColor, startColor, size);
                 case ColorInterpolationMode.Linear:
                     return CalculateGradientLinear(endColor, startColor, size);
                 case ColorInterpolationMode.LinearCorrected:
@@ -102,7 +101,7 @@ namespace LuminInside.Helper
                 var rAverage = rMin + (int)((rMax - rMin) * i / size);
                 var gAverage = gMin + (int)((gMax - gMin) * i / size);
                 var bAverage = bMin + (int)((bMax - bMin) * i / size);
-                colorList.Add(Color.FromArgb((byte)rAverage, (byte)gAverage, (byte)bAverage));
+                colorList.Add(Color.FromArgb(rAverage, gAverage, bAverage));
             }
             return colorList;
         }
@@ -128,7 +127,6 @@ namespace LuminInside.Helper
 
         private static IList CalculateGradientHUE(Color startColor, Color endColor, int size)
         {
-
             IList colors = new ArrayList();
             HSLColor startHlsColor = startColor;
             HSLColor endHlsColor = endColor;
@@ -139,66 +137,63 @@ namespace LuminInside.Helper
                 var hueAverage = endHlsColor.Hue + (int)((startHlsColor.Hue - endHlsColor.Hue) * i / size);
                 var saturationAverage = endHlsColor.Saturation + (int)((startHlsColor.Saturation - endHlsColor.Saturation) * i / size);
                 var luminosityAverage = endHlsColor.Luminosity + (int)((startHlsColor.Luminosity - endHlsColor.Luminosity) * i / size);
-                colors.Add(new HSLColor(hueAverage, saturationAverage, luminosityAverage));
+
+                colors.Add((Color)new HSLColor(hueAverage, saturationAverage, luminosityAverage));
             }
             return colors;
-
         }
 
-        ////private static IList CalculateGradientHUENearest(Color startColor, Color endColor, int size)
-        ////{
+        private static IList CalculateGradientHUENearest(Color startColor, Color endColor, int size)
+        {
+            bool considerNearest = true;
+            IList colors = new ArrayList();
+            HSLColor startHlsColor = startColor;
+            HSLColor endHlsColor = endColor;
+            int discreteUnits = size;
 
-        ////    bool considerNearest = true;
-        ////    IList colors = new ArrayList();
-        ////    HSLColor startHlsColor = startColor;
-        ////    HSLColor endHlsColor = endColor;
-        ////    int discreteUnits = size;
+            for (int i = 0; i < discreteUnits; i++)
+            {
+                double hueAverage;
+                double saturationAverage;
+                double luminosityAverage;
 
-        ////    for (int i = 0; i < discreteUnits; i++)
-        ////    {
-        ////        double hueAverage;
-        ////        double saturationAverage;
-        ////        double luminosityAverage;
+                if (considerNearest)
+                {
+                    var direction = CalculateDeltaAndDirection(startHlsColor.Hue, endHlsColor.Hue);
+                    double delta = Math.Abs((direction == 1 ? endHlsColor.Hue - startHlsColor.Hue : startHlsColor.Hue - endHlsColor.Hue) / size);
+                    hueAverage = endHlsColor.Hue + direction * (int)(delta * i);
 
-        ////        if (considerNearest)
-        ////        {
-        ////            var deltaDirection = CalculateDeltaAndDirection(startHlsColor.Hue, endHlsColor.Hue, size);
-        ////            hueAverage = endHlsColor.Hue + deltaDirection.direction * (int)(deltaDirection.delta * i);
+                    direction = CalculateDeltaAndDirection(startHlsColor.Saturation, endHlsColor.Saturation);
+                    delta = Math.Abs((direction == 1 ? endHlsColor.Hue - startHlsColor.Hue : startHlsColor.Hue - endHlsColor.Hue) / size);
+                    saturationAverage = endHlsColor.Saturation + direction * (int)(delta * i);
 
-        ////            deltaDirection = CalculateDeltaAndDirection(startHlsColor.Saturation, endHlsColor.Saturation, size);
-        ////            saturationAverage = endHlsColor.Saturation + deltaDirection.direction * (int)(deltaDirection.delta * i);
+                    direction = CalculateDeltaAndDirection(startHlsColor.Luminosity, endHlsColor.Luminosity);
+                    delta = Math.Abs((direction == 1 ? endHlsColor.Hue - startHlsColor.Hue : startHlsColor.Hue - endHlsColor.Hue) / size);
+                    luminosityAverage = endHlsColor.Luminosity + direction * (int)(delta * i);
+                }
+                else
+                {
+                    hueAverage = endHlsColor.Hue + (int)((startHlsColor.Hue - endHlsColor.Hue) * i / size);
+                    saturationAverage = endHlsColor.Saturation + (int)((startHlsColor.Saturation - endHlsColor.Saturation) * i / size);
+                    luminosityAverage = endHlsColor.Luminosity + (int)((startHlsColor.Luminosity - endHlsColor.Luminosity) * i / size);
+                }
+                colors.Add((Color)new HSLColor(hueAverage, saturationAverage, luminosityAverage));
+            }
+            return colors;
+        }
 
-        ////            deltaDirection = CalculateDeltaAndDirection(startHlsColor.Luminosity, endHlsColor.Luminosity, size);
-        ////            luminosityAverage = endHlsColor.Luminosity + deltaDirection.direction * (int)(deltaDirection.delta * i);
-        ////        }
-        ////        else
-        ////        {
-        ////            hueAverage = endHlsColor.Hue + (int)((startHlsColor.Hue - endHlsColor.Hue) * i / size);
-        ////            saturationAverage = endHlsColor.Saturation + (int)((startHlsColor.Saturation - endHlsColor.Saturation) * i / size);
-        ////            luminosityAverage = endHlsColor.Luminosity + (int)((startHlsColor.Luminosity - endHlsColor.Luminosity) * i / size);
-        ////        }
-        ////        colors.Add(new HSLColor(hueAverage, saturationAverage, luminosityAverage));
-        ////    }
-        ////    return colors;
+        private static int CalculateDeltaAndDirection(double start, double end)
+        {
+            int direction = 1;
+            if (start > end)
+                direction = -1;
 
-        ////}
-
-        ////private static (double delta, int direction) CalculateDeltaAndDirection(double start, double end, int size)
-        ////{
-        ////    int direction = 1;
-        ////    if (start > end)
-        ////        direction = -1;
-
-        ////    double delta = Math.Abs((direction == 1 ? end - start : start - end) / size);
-
-        ////    return (delta, direction);
-
-        ////}
+            return direction;
+        }
 
         public static string HexConverter(Color c)
         {
             return "#" + c.A.ToString("X2")  + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
-
         }
 
         public static String RGBConverter(Color c)

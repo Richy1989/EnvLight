@@ -1,11 +1,11 @@
-﻿using HeliosClockAPIStandard.GpioService;
-using LuminInside.Helper;
-using NFApp1.Enumerations;
-using NFApp1.Manager;
-using System;
+﻿using System;
 using System.Device.Gpio;
 using System.Diagnostics;
+using System.Drawing;
 using System.Threading;
+using HeliosClockAPIStandard.GpioService;
+using NFApp1.Enumerations;
+using NFApp1.Manager;
 
 namespace NFApp1.GpioService
 {
@@ -54,8 +54,6 @@ namespace NFApp1.GpioService
         /// <param name="stoppingToken">Triggered when <see cref="M:Microsoft.Extensions.Hosting.IHostedService.StopAsync(System.Threading.CancellationToken)" /> is called.</param>
         public void Execute()
         {
-            Debug.WriteLine(string.Format("Started GPIO Watch ..."));
-
             gpioController.OpenPin(gpioInputPin.LeftSide, PinMode.Input);
             gpioController.OpenPin(gpioInputPin.RightSide, PinMode.Input);
 
@@ -71,6 +69,7 @@ namespace NFApp1.GpioService
                 ExecuteTouchWatcher(LedSide.Right, pinV, side == LedSide.Left ? stopwatchLeft : stopwatchRight);
             });
 
+            Debug.WriteLine(string.Format("Started GPIO Watch ..."));
 
             ////try
             ////{

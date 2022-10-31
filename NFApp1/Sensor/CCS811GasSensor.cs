@@ -73,7 +73,7 @@ namespace NFApp1.Sensor
                         ((SensorAirQualityMessage)publishMqtt.Messages[typeof(SensorAirQualityMessage)]).TotalVolatileOrganicCompound = this.eTVOC;
                     }
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(TimeSpan.FromSeconds(10));
             }
         }
 

@@ -18,6 +18,7 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="Light\APA102.cs" />
     <Compile Include="MQTT\SensorAirQualityMessage.cs" />
     <Compile Include="NotPushable\NotPushable.cs" />
     <Compile Include="Resources.Designer.cs">
@@ -40,7 +41,6 @@
     <Compile Include="GpioService\GpioInputPin.cs" />
     <Compile Include="GpioService\GpioService.cs" />
     <Compile Include="GpioService\TouchDefaultValues.cs" />
-    <Compile Include="Helper\Color.cs" />
     <Compile Include="Helper\ColorHelpers.cs" />
     <Compile Include="Helper\HLSColor.cs" />
     <Compile Include="Helper\PixelHelper.cs" />
@@ -63,6 +63,9 @@
     <Compile Include="WiFi\WiFiManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Iot.Device.Apa102">
+      <HintPath>..\packages\nanoFramework.Iot.Device.Apa102.1.2.141\lib\Iot.Device.Apa102.dll</HintPath>
+    </Reference>
     <Reference Include="Iot.Device.Ccs811">
       <HintPath>..\packages\nanoFramework.Iot.Device.Ccs811.1.2.141\lib\Iot.Device.Ccs811.dll</HintPath>
     </Reference>
@@ -122,6 +125,9 @@
     </Reference>
     <Reference Include="System.Diagnostics.Stopwatch">
       <HintPath>..\packages\nanoFramework.System.Diagnostics.Stopwatch.1.2.141\lib\System.Diagnostics.Stopwatch.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <HintPath>..\packages\nanoFramework.System.Drawing.1.2.141\lib\System.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.FileSystem">
       <HintPath>..\packages\nanoFramework.System.IO.FileSystem.1.1.15\lib\System.IO.FileSystem.dll</HintPath>
