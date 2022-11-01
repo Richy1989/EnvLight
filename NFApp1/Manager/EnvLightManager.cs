@@ -51,26 +51,29 @@ namespace NFApp1.Manager
             CancellationToken token = source.Token;
 
             controller = new GpioController();
-            this.gpioService = new GpioService.GpioService(controller, this, SettingsManager.GlobalSettings, token);
-            gpioService.Execute();
-            ////Thread touchThread = new(new ThreadStart(gpioService.Execute));
-            ////touchThread.Start();
 
             LedManager = new(new LedAPA102Controller(50, GlobalSettings.SPIMOSI, GlobalSettings.SPICLK));
-            Thread lightTread = new(new ThreadStart(() =>
-            {
-                while (true)
-                {
-                    LedManager.SetRandomColor();
-                    Thread.Sleep(TimeSpan.FromSeconds(1));
-                }
-            }));
+            ////Thread lightTread = new(new ThreadStart(() =>
+            ////{
+            ////    ////while (true)
+            ////    ////{
+            ////    ////    LedManager.SetRandomColor();
+            ////    ////    Thread.Sleep(TimeSpan.FromSeconds(1));
+            ////    ////}
+            ////}));
 
-            lightTread.Start();
+            ////lightTread.Start();
 
-            WebManager webManager = new WebManager();
-            Thread webThread = new(new ThreadStart(webManager.StartServer));
-            webThread.Start();
+
+
+            this.gpioService = new GpioService.GpioService(controller, this, SettingsManager.GlobalSettings, token);
+            //gpioService.Execute();
+            Thread touchThread = new(new ThreadStart(gpioService.Execute));
+            touchThread.Start();
+
+            ////WebManager webManager = new WebManager();
+            ////Thread webThread = new(new ThreadStart(webManager.StartServer));
+            ////webThread.Start();
 
             if (GlobalSettings.WifiSettings.ConnectToWifi)
             {

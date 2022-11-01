@@ -12,6 +12,7 @@ namespace NFApp1.Helper
         private double luminosity = 1.0;
 
         public const double scale = 360.0;
+        private const double percentage = 100.0;
 
         public static double Scale
         {
@@ -23,15 +24,17 @@ namespace NFApp1.Helper
             get { return hue * scale; }
             set { hue = CheckRange(value / scale); }
         }
+
         public double Saturation
         {
-            get { return saturation * scale; }
-            set { saturation = CheckRange(value / scale); }
+            get { return saturation * percentage; }
+            set { saturation = CheckRange(value / percentage); }
         }
+
         public double Luminosity
         {
-            get { return luminosity * scale; }
-            set { luminosity = CheckRange(value / scale); }
+            get { return luminosity * percentage; }
+            set { luminosity = CheckRange(value / percentage); }
         }
 
         private double CheckRange(double value)
@@ -87,6 +90,7 @@ namespace NFApp1.Helper
             else
                 return temp1;
         }
+
         private static double MoveIntoRange(double temp3)
         {
             if (temp3 < 0.0)
@@ -95,6 +99,7 @@ namespace NFApp1.Helper
                 temp3 -= 1.0;
             return temp3;
         }
+
         private static double GetTemp2(HSLColor hslColor)
         {
             double temp2;
@@ -127,6 +132,7 @@ namespace NFApp1.Helper
         }
 
         public HSLColor() { }
+
         public HSLColor(Color color)
         {
             var hslColor = HSLColor.FromRGB(color.R, color.G, color.B);
@@ -147,7 +153,9 @@ namespace NFApp1.Helper
             Luminosity = luminosity;
         }
 
-        public static HSLColor FromRGB(Byte R, Byte G, Byte B)
+        public static HSLColor FromRGB(Color color) => FromRGB(color.R, color.G, color.B);
+
+        public static HSLColor FromRGB(byte R, byte G, byte B)
         {
             float _R = (R / 255f);
             float _G = (G / 255f);
@@ -190,10 +198,8 @@ namespace NFApp1.Helper
             //Convert to degrees
             H = H * 60f;
             if (H < 0) H += 360;
-            H = H / 360f;
 
-            return new HSLColor(H * scale, S * scale, L * scale);
+            return new HSLColor(H, S * percentage, L * percentage);
         }
-
     }
 }

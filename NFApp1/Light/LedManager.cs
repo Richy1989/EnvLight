@@ -1,11 +1,10 @@
-﻿using LuminInside.Common;
+﻿using System;
+using System.Drawing;
+using LuminInside.Common;
 using LuminInside.Enumerations;
 using LuminInside.Helper;
 using NFApp1.Enumerations;
 using NFApp1.Helper;
-using System;
-using System.Diagnostics;
-using System.Drawing;
 
 namespace NFApp1.Light
 {
@@ -54,11 +53,11 @@ namespace NFApp1.Light
         {
             Random rnd = new();
             var hueStart = rnd.Next(360);
-            HSLColor startHSL = new(((double)hueStart), ((double)360), ((double)(360/2)));
+            HSLColor startHSL = new(((double)hueStart), ((double)100), ((double)(50)));
 
             rnd = new Random(300);
             var hueEnd = rnd.Next(360);
-            HSLColor endHSL = new(((double)hueEnd), ((double)360), ((double)(360/2)));
+            HSLColor endHSL = new(((double)hueEnd), ((double)100), ((double)(50)));
 
             SetColor(startHSL, endHSL, ColorInterpolationMode.HueMode);
         }

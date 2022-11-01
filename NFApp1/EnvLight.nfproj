@@ -18,7 +18,6 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="Light\APA102.cs" />
     <Compile Include="MQTT\SensorAirQualityMessage.cs" />
     <Compile Include="NotPushable\NotPushable.cs" />
     <Compile Include="Resources.Designer.cs">

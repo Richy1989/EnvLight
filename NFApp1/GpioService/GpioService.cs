@@ -2,6 +2,7 @@
 using System.Device.Gpio;
 using System.Diagnostics;
 using System.Drawing;
+using System.Reflection;
 using System.Threading;
 using HeliosClockAPIStandard.GpioService;
 using NFApp1.Enumerations;
@@ -54,49 +55,51 @@ namespace NFApp1.GpioService
         /// <param name="stoppingToken">Triggered when <see cref="M:Microsoft.Extensions.Hosting.IHostedService.StopAsync(System.Threading.CancellationToken)" /> is called.</param>
         public void Execute()
         {
-            gpioController.OpenPin(gpioInputPin.LeftSide, PinMode.Input);
-            gpioController.OpenPin(gpioInputPin.RightSide, PinMode.Input);
+            ////gpioController.OpenPin(gpioInputPin.LeftSide, PinMode.Input);
+            ////gpioController.OpenPin(gpioInputPin.RightSide, PinMode.Input);
 
-            gpioController.RegisterCallbackForPinValueChangedEvent(gpioInputPin.LeftSide, PinEventTypes.Falling | PinEventTypes.Rising, (s, e) =>
-            {
-                PinValue pinV = e.ChangeType == PinEventTypes.Falling ? PinValue.Low : PinValue.High;
-                ExecuteTouchWatcher(LedSide.Left, pinV, side == LedSide.Left ? stopwatchLeft : stopwatchRight);
-            });
-
-            gpioController.RegisterCallbackForPinValueChangedEvent(gpioInputPin.RightSide, PinEventTypes.Falling | PinEventTypes.Rising, (s, e) =>
-            {
-                PinValue pinV = e.ChangeType == PinEventTypes.Falling ? PinValue.Low : PinValue.High;
-                ExecuteTouchWatcher(LedSide.Right, pinV, side == LedSide.Left ? stopwatchLeft : stopwatchRight);
-            });
-
-            Debug.WriteLine(string.Format("Started GPIO Watch ..."));
-
-            ////try
+            ////gpioController.RegisterCallbackForPinValueChangedEvent(gpioInputPin.LeftSide, PinEventTypes.Falling | PinEventTypes.Rising, (s, e) =>
             ////{
-            ////    gpioController.OpenPin(gpioInputPin.LeftSide, PinMode.Input);
-            ////    gpioController.OpenPin(gpioInputPin.RightSide, PinMode.Input);
+            ////    PinValue pinV = e.ChangeType == PinEventTypes.Falling ? PinValue.Low : PinValue.High;
+            ////    ExecuteTouchWatcher(LedSide.Left, pinV, side == LedSide.Left ? stopwatchLeft : stopwatchRight);
+            ////});
 
-            ////    var side = LedSide.Left;
-
-            ////    while (!stoppingToken.IsCancellationRequested)
-            ////    {
-            ////        isOn = manager.IsLightOn;
-
-            ////        var input = gpioController.Read(side == LedSide.Left ? gpioInputPin.LeftSide : gpioInputPin.RightSide);
-            ////        ExecuteTouchWatcher(side, input, side == LedSide.Left ? stopwatchLeft : stopwatchRight);
-            ////        side = side == LedSide.Left ? LedSide.Right : LedSide.Left;
-            ////        Thread.Sleep(5);
-            ////    }
-
-            ////    gpioController.ClosePin(gpioInputPin.LeftSide);
-            ////    gpioController.ClosePin(gpioInputPin.RightSide);
-            ////}
-            ////catch (Exception ex)
+            ////gpioController.RegisterCallbackForPinValueChangedEvent(gpioInputPin.RightSide, PinEventTypes.Falling | PinEventTypes.Rising, (s, e) =>
             ////{
-            ////    Debug.WriteLine(string.Format("Error Read Pin GPIO Service. Message: {0} ...", ex.Message));
-            ////}
+            ////    PinValue pinV = e.ChangeType == PinEventTypes.Falling ? PinValue.Low : PinValue.High;
+            ////    ExecuteTouchWatcher(LedSide.Right, pinV, side == LedSide.Left ? stopwatchLeft : stopwatchRight);
+            ////});
 
-            ////Debug.WriteLine(string.Format("Stopped GPIO Watch ..."));
+            try
+            {
+                gpioController.OpenPin(gpioInputPin.LeftSide, PinMode.Input);
+                gpioController.OpenPin(gpioInputPin.RightSide, PinMode.Input);
+
+                var side = LedSide.Left;
+
+                Debug.WriteLine(string.Format("Started GPIO Watch ..."));
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    isOn = manager.IsLightOn;
+
+                    var input = gpioController.Read(side == LedSide.Left ? gpioInputPin.LeftSide : gpioInputPin.RightSide);
+                    ExecuteTouchWatcher(side, input, side == LedSide.Left ? stopwatchLeft : stopwatchRight);
+
+                    manager.IsLightOn = isOn;
+
+                    side = side == LedSide.Left ? LedSide.Right : LedSide.Left;
+                    Thread.Sleep(5);
+                }
+
+                gpioController.ClosePin(gpioInputPin.LeftSide);
+                gpioController.ClosePin(gpioInputPin.RightSide);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format("Error Read Pin GPIO Service. Message: {0} ...", ex.Message));
+            }
+
+            Debug.WriteLine(string.Format("Stopped GPIO Watch ..."));
         }
 
         /// <summary>Executes the touch watcher. Checks if short or long press. On or Off.</summary>
@@ -194,6 +197,9 @@ namespace NFApp1.GpioService
 
                     isRightOn = !isRightOn;
                 }
+
+                if (isLeftOn || isRightOn)
+                    isOn = true;
             }
         }
 
