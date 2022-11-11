@@ -18,6 +18,9 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="MQTT\Interfaces\IMqttSubscriber.cs" />
+    <Compile Include="MQTT\Commands\MqttCommandLightOnOff.cs" />
+    <Compile Include="MQTT\Commands\MqttCommandStrings.cs" />
     <Compile Include="MQTT\SensorAirQualityMessage.cs" />
     <Compile Include="NotPushable\NotPushable.cs" />
     <Compile Include="Resources.Designer.cs">
@@ -47,7 +50,7 @@
     <Compile Include="Light\LEDController\LedAPA102Controller.cs" />
     <Compile Include="Light\LedManager.cs" />
     <Compile Include="Manager\EnvLightManager.cs" />
-    <Compile Include="MQTT\IMessageBase.cs" />
+    <Compile Include="MQTT\Interfaces\IMessageBase.cs" />
     <Compile Include="MQTT\MqttManager.cs" />
     <Compile Include="MQTT\SensorEnvironmentMessage.cs" />
     <Compile Include="Program.cs" />
@@ -63,13 +66,13 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Iot.Device.Apa102">
-      <HintPath>..\packages\nanoFramework.Iot.Device.Apa102.1.2.141\lib\Iot.Device.Apa102.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.Iot.Device.Apa102.1.2.153\lib\Iot.Device.Apa102.dll</HintPath>
     </Reference>
     <Reference Include="Iot.Device.Ccs811">
-      <HintPath>..\packages\nanoFramework.Iot.Device.Ccs811.1.2.141\lib\Iot.Device.Ccs811.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.Iot.Device.Ccs811.1.2.153\lib\Iot.Device.Ccs811.dll</HintPath>
     </Reference>
     <Reference Include="Iot.Device.Dhtxx.Esp32">
-      <HintPath>..\packages\nanoFramework.Iot.Device.Dhtxx.Esp32.1.2.141\lib\Iot.Device.Dhtxx.Esp32.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.Iot.Device.Dhtxx.Esp32.1.2.153\lib\Iot.Device.Dhtxx.Esp32.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>..\packages\nanoFramework.CoreLibrary.1.12.0\lib\mscorlib.dll</HintPath>
@@ -84,7 +87,7 @@
       <HintPath>..\packages\nanoFramework.Json.2.2.63\lib\nanoFramework.Json.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.M2Mqtt">
-      <HintPath>..\packages\nanoFramework.M2Mqtt.5.1.48\lib\nanoFramework.M2Mqtt.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.M2Mqtt.5.1.53\lib\nanoFramework.M2Mqtt.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.ResourceManager">
       <HintPath>..\packages\nanoFramework.ResourceManager.1.2.7\lib\nanoFramework.ResourceManager.dll</HintPath>
@@ -135,7 +138,7 @@
       <HintPath>..\packages\nanoFramework.System.IO.Streams.1.1.27\lib\System.IO.Streams.dll</HintPath>
     </Reference>
     <Reference Include="System.Math">
-      <HintPath>..\packages\nanoFramework.System.Math.1.5.15\lib\System.Math.dll</HintPath>
+      <HintPath>..\packages\nanoFramework.System.Math.1.5.18\lib\System.Math.dll</HintPath>
     </Reference>
     <Reference Include="System.Net">
       <HintPath>..\packages\nanoFramework.System.Net.1.10.38\lib\System.Net.dll</HintPath>
@@ -147,19 +150,19 @@
       <HintPath>..\packages\nanoFramework.System.Threading.1.1.8\lib\System.Threading.dll</HintPath>
     </Reference>
     <Reference Include="UnitsNet.ElectricCurrent">
-      <HintPath>..\packages\UnitsNet.nanoFramework.ElectricCurrent.4.145.0\lib\UnitsNet.ElectricCurrent.dll</HintPath>
+      <HintPath>..\packages\UnitsNet.nanoFramework.ElectricCurrent.4.148.0\lib\UnitsNet.ElectricCurrent.dll</HintPath>
     </Reference>
     <Reference Include="UnitsNet.Length">
-      <HintPath>..\packages\UnitsNet.nanoFramework.Length.4.145.0\lib\UnitsNet.Length.dll</HintPath>
+      <HintPath>..\packages\UnitsNet.nanoFramework.Length.4.148.0\lib\UnitsNet.Length.dll</HintPath>
     </Reference>
     <Reference Include="UnitsNet.RelativeHumidity">
-      <HintPath>..\packages\UnitsNet.nanoFramework.RelativeHumidity.4.145.0\lib\UnitsNet.RelativeHumidity.dll</HintPath>
+      <HintPath>..\packages\UnitsNet.nanoFramework.RelativeHumidity.4.148.0\lib\UnitsNet.RelativeHumidity.dll</HintPath>
     </Reference>
     <Reference Include="UnitsNet.Temperature">
-      <HintPath>..\packages\UnitsNet.nanoFramework.Temperature.4.145.0\lib\UnitsNet.Temperature.dll</HintPath>
+      <HintPath>..\packages\UnitsNet.nanoFramework.Temperature.4.148.0\lib\UnitsNet.Temperature.dll</HintPath>
     </Reference>
     <Reference Include="UnitsNet.VolumeConcentration">
-      <HintPath>..\packages\UnitsNet.nanoFramework.VolumeConcentration.4.145.0\lib\UnitsNet.VolumeConcentration.dll</HintPath>
+      <HintPath>..\packages\UnitsNet.nanoFramework.VolumeConcentration.4.148.0\lib\UnitsNet.VolumeConcentration.dll</HintPath>
     </Reference>
     <Reference Include="Windows.Storage">
       <HintPath>..\packages\nanoFramework.Windows.Storage.1.5.24\lib\Windows.Storage.dll</HintPath>

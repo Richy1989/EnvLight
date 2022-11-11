@@ -53,27 +53,15 @@ namespace NFApp1.Manager
             controller = new GpioController();
 
             LedManager = new(new LedAPA102Controller(50, GlobalSettings.SPIMOSI, GlobalSettings.SPICLK));
-            ////Thread lightTread = new(new ThreadStart(() =>
-            ////{
-            ////    ////while (true)
-            ////    ////{
-            ////    ////    LedManager.SetRandomColor();
-            ////    ////    Thread.Sleep(TimeSpan.FromSeconds(1));
-            ////    ////}
-            ////}));
-
-            ////lightTread.Start();
-
-
+            LedManager.LightOnOff(PowerOnOff.Off, LedSide.Full, Color.Black);
 
             this.gpioService = new GpioService.GpioService(controller, this, SettingsManager.GlobalSettings, token);
-            //gpioService.Execute();
             Thread touchThread = new(new ThreadStart(gpioService.Execute));
             touchThread.Start();
 
-            ////WebManager webManager = new WebManager();
-            ////Thread webThread = new(new ThreadStart(webManager.StartServer));
-            ////webThread.Start();
+            WebManager webManager = new WebManager();
+            Thread webThread = new(new ThreadStart(webManager.StartServer));
+            webThread.Start();
 
             if (GlobalSettings.WifiSettings.ConnectToWifi)
             {
@@ -92,6 +80,7 @@ namespace NFApp1.Manager
                     string.Format("{0}/{1}", AsseblyName, GlobalSettings.MqttSettings.MqttClientID),
                     GlobalSettings.MqttSettings.MqttUserName,
                     GlobalSettings.MqttSettings.MqttPassword);
+                mqttManager.InitializeMQTT();
 
                 Thread mqttThread = new(new ThreadStart(mqttManager.StartSending));
                 mqttThread.Start();

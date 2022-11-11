@@ -1,5 +1,6 @@
 ﻿using nanoFramework.WebServer;
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace NFApp1.WebContent
@@ -17,8 +18,24 @@ namespace NFApp1.WebContent
 
         public void StartServer()
         {
-            server.Start();
-            Thread.Sleep(Timeout.Infinite);
+            int count = 0;
+
+            while (count++ <= 5)
+            {
+                try
+                {
+                    server.Start();
+                    Thread.Sleep(Timeout.Infinite);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error starting WebServer, Message: {ex.Message}");
+                }
+
+                Debug.WriteLine($"Retry starting WebServer. Try: {count}/5");
+                Thread.Sleep(TimeSpan.FromMilliseconds(500));
+            }
+            Debug.WriteLine($"Not possible to start WebServer");
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace NFApp1.MQTT
+﻿using NFApp1.MQTT.Interfaces;
+
+namespace NFApp1.MQTT
 {
     public class SensorAirQualityMessage : IMessageBase
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using NFApp1.MQTT.Interfaces;
 
 namespace NFApp1.MQTT
 {
